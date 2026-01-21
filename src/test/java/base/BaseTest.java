@@ -1,8 +1,12 @@
 package base;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.time.Duration;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.ITestResult;
@@ -40,16 +44,38 @@ public class BaseTest {
 		
 		@AfterMethod
 		public void tearDown(ITestResult result) {
-			
-			if(result.getStatus()==ITestResult.FAILURE) {
-				test.fail(result.getThrowable());
-			}
-			else if(result.getStatus()==ITestResult.SUCCESS)
-			{
-				test.pass("Test passed");
-			}
-			driver.quit();
+
+		    if (result.getStatus() == ITestResult.FAILURE) {
+		        test.fail(result.getThrowable());
+
+		        // Take screenshot on failure
+		        try {
+		            TakesScreenshot ts = (TakesScreenshot) driver;
+		            File src = ts.getScreenshotAs(OutputType.FILE);
+
+		            String screenshotPath =
+		                    System.getProperty("user.dir")
+		                    + "/target/screenshots/"
+		                    + result.getName() + ".png";
+
+		            FileUtils.copyFile(src, new File(screenshotPath));
+
+		            // Attach screenshot to Extent report
+		            test.addScreenCaptureFromPath(screenshotPath);
+
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+
+		    } else if (result.getStatus() == ITestResult.SUCCESS) {
+		        test.pass("Test passed");
+		    }
+
+		    if (driver != null) {
+		        driver.quit();
+		    }
 		}
+
 		
 		@AfterSuite
 		public void flushReport(){
