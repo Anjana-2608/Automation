@@ -1,19 +1,23 @@
 package pages;
 
+import java.time.Duration;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class RegisterPage {
 
 	protected WebDriver driver;
 
-	//Constructor
+	// Constructor
 	public RegisterPage(WebDriver driver) {
 		this.driver = driver;
 	}
 
-	
-	//Locators
+	// Locators
 	private By MyAccount = By.xpath("//span[text()='My Account']");
 	private By registerLink = By.linkText("Register");
 
@@ -32,11 +36,11 @@ public class RegisterPage {
 	private By continueAfterRegister = By.xpath("//a[text()='Continue']");
 	private By editAccountInfo = By.linkText("Edit your account information");
 
-	//Actions
+	// Actions
 	public void openRegisterPage() {
-		driver.findElement(MyAccount).click();
+		waitForElementToBeClickable(driver, MyAccount).click();
 	}
-	
+
 	public void clickRegisterlink() {
 		driver.findElement(registerLink).click();
 	}
@@ -70,7 +74,7 @@ public class RegisterPage {
 		driver.findElement(continueButton).click();
 	}
 
-	//Validations
+	// Validations
 	public boolean isLogoutDisplay() {
 		return driver.findElement(logoutLink).isDisplayed();
 	}
@@ -86,9 +90,14 @@ public class RegisterPage {
 	public void clickContinueAfterRegister() {
 		driver.findElement(continueAfterRegister).click();
 	}
-	
+
 	public boolean isEditInfoDisplay() {
 		return driver.findElement(editAccountInfo).isDisplayed();
+	}
+
+	public WebElement waitForElementToBeClickable(WebDriver driver, By locator) {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		return wait.until(ExpectedConditions.elementToBeClickable(locator));
 	}
 
 }
