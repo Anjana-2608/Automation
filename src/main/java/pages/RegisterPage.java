@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -37,9 +38,31 @@ public class RegisterPage {
 	private By editAccountInfo = By.linkText("Edit your account information");
 
 	// Actions
+//	public void openRegisterPage() {
+//		waitForElementToBeClickable(driver, MyAccount).click();
+//	}
+	
 	public void openRegisterPage() {
-		waitForElementToBeClickable(driver, MyAccount).click();
+
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+	    Actions actions = new Actions(driver);
+
+	    // 1️⃣ Wait only for visibility (NOT clickable)
+	    WebElement myAccount = wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(MyAccount)
+	    );
+
+	    // 2️⃣ Hover
+	    actions.moveToElement(myAccount).perform();
+
+	    // 3️⃣ Now wait for Register to be clickable
+	    WebElement register = wait.until(
+	            ExpectedConditions.elementToBeClickable(registerLink)
+	    );
+
+	    register.click();
 	}
+
 
 	public void clickRegisterlink() {
 		driver.findElement(registerLink).click();
@@ -93,11 +116,6 @@ public class RegisterPage {
 
 	public boolean isEditInfoDisplay() {
 		return driver.findElement(editAccountInfo).isDisplayed();
-	}
-
-	public WebElement waitForElementToBeClickable(WebDriver driver, By locator) {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		return wait.until(ExpectedConditions.elementToBeClickable(locator));
 	}
 
 }
